@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>자기소개 블로그</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body>
+
+  <div class="container">
+
+    <button class="dark-mode-toggle" onclick="toggleDarkMode()">🌙 다크모드</button>
+
+    <h1 class="main-title">👋 안녕하세요! 제 블로그에 오신 걸 환영합니다</h1>
+
+    <h2 class="sub-title">이름: 박준섭 | 나이: 18 | 좋아하는 것: 게임 🎮, 축구 ⚽, 글쓰기</h2>
+
+    <!-- 취미 배너 -->
+    <div class="banner hobby-banner" onclick="toggleSection('hobby-section')">
+      <i class="fas fa-star"></i> 취미 보기
+    </div>
+    <div id="hobby-section" class="content-section hidden">
+      
+      <!-- 게임 배너 -->
+      <div class="banner game-banner" onclick="toggleSection('game-section')">
+        <i class="fas fa-gamepad"></i> 🎮 게임
+      </div>
+      <div id="game-section" class="content-section hidden">
+        <p>
+          저는 다양한 장르의 게임을 즐깁니다. 특히 로그라이크와 스토리 중심의 게임을 좋아해요.
+          혼자 조용히 플레이하는 것도 좋지만, 친구들과 함께 하는 멀티플레이 게임도 즐겨 합니다.
+        </p>
+      </div>
+
+      <!-- 축구 배너 -->
+      <div class="banner soccer-banner" onclick="toggleSection('soccer-section')">
+        <i class="fas fa-futbol"></i> ⚽ 축구
+      </div>
+      <div id="soccer-section" class="content-section hidden">
+        <p>
+          축구는 저의 열정입니다. 특히 잉글리시 프리미어리그 팀인 '첼시'의 팬이에요.  
+          드리블, 패스, 전술 등 축구의 모든 요소가 너무 흥미롭고 직접 플레이하는 것도 좋아합니다.
+        </p>
+      </div>
+
+    </div>
+
+    <!-- 댓글 및 방명록 -->
+    <section class="comment-section">
+      <h3>📬 방명록 / 댓글</h3>
+      <textarea id="comment-input" placeholder="댓글을 입력하세요..."></textarea>
+      <button onclick="addComment()">댓글 작성</button>
+      <ul id="comment-list"></ul>
+    </section>
+
+    <!-- 구독 섹션 -->
+    <section class="subscribe-section">
+      <h3>📧 블로그 구독하기</h3>
+      <input type="email" id="email-input" placeholder="이메일 주소를 입력하세요" />
+      <button onclick="subscribe()">구독</button>
+      <p id="subscribe-msg"></p>
+    </section>
+
+  </div>
+
+<script>
+  function toggleSection(id) {
+    const el = document.getElementById(id);
+    el.classList.toggle('hidden');
+  }
+
+  function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+  }
+
+  // 댓글 추가 (좋아요/싫어요 버튼 포함, 관리자 답글 기능 포함)
+  function addComment() {
+    const input = document.getElementById('comment-input');
+    const list = document.getElementById('comment-list');
+    const text = input.value.trim();
+    if (!text) return alert('댓글 내용을 입력해주세요.');
+
+    const li = document.createElement('li');
+    li.className = 'comment-item';
+
+    // 댓글 텍스트 + 시간
+    const now = new Date();
+    const timeStr = now.toLocaleString();
+    const commentText = document.createElement('p');
+    commentText.textContent = `${text} (${timeStr})`;
+
+    // 좋아요 / 싫어요 버튼
+    const likeBtn = document.createElement('button');
+    likeBtn.textContent = '👍 0';
+    likeBtn.className = 'like-btn';
+    let likes = 0;
+    likeBtn.onclick = () => {
+      likes++;
+      likeBtn.textContent = `👍 ${likes}`;
+    };
+
+    const dislikeBtn = document.createElement('button');
+    dislikeBtn.textContent = '👎 0';
+    dislikeBtn.className = 'dislike-btn';
+    let dislikes = 0;
+    dislikeBtn.onclick = () => {
+      dislikes++;
+      dislikeBtn.textContent = `👎 ${dislikes}`;
+    };
+
+    // 관리자 답글 (간단하게 답글 달기 버튼 + 입력창 보여주기)
+    const replyBtn = document.createElement('button');
+    replyBtn.textContent = '답글 달기';
+    replyBtn.className = 'reply-btn';
+
+    const replyBox = document.createElement('div');
+    replyBox.className = 'reply-box hidden';
+
+    const replyInput = document.createElement('input');
+    replyInput.type = 'text';
+    replyInput.placeholder = '답글을 입력하세요';
+
+    const replySubmit = document.createElement('button');
+    replySubmit.textContent = '답글 제출';
+
+    replySubmit.onclick = () => {
+      if (replyInput.value.trim() === '') {
+        alert('답글 내용을 입력하세요.');
+        return;
+      }
+      const replyText = document.createElement('p');
+      replyText.className = 'admin-reply';
+      replyText.textContent = `관리자 답글: ${replyInput.value}`;
+      replyBox.appendChild(replyText);
+      replyInput.value = '';
+      replyBox.classList.add('hidden');
+    };
+
+    replyBtn.onclick = () => {
+      replyBox.classList.toggle('hidden');
+    };
+
+    replyBox.appendChild(replyInput);
+    replyBox.appendChild(replySubmit);
+
+    // 버튼 그룹
+    const btnGroup = document.createElement('div');
+    btnGroup.className = 'btn-group';
+    btnGroup.appendChild(likeBtn);
+    btnGroup.appendChild(dislikeBtn);
+    btnGroup.appendChild(replyBtn);
+
+    li.appendChild(commentText);
+    li.appendChild(btnGroup);
+    li.appendChild(replyBox);
+
+    list.appendChild(li);
+
+    input.value = '';
+  }
+
+  // 구독 기능 (이메일 간단 검증)
+  function subscribe() {
+    const emailInput = document.getElementById('email-input');
+    const msg = document.getElementById('subscribe-msg');
+    const email = emailInput.value.trim();
+
+    if (!email) {
+      msg.style.color = 'red';
+      msg.textContent = '이메일을 입력해주세요.';
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      msg.style.color = 'red';
+      msg.textContent = '유효한 이메일 주소를 입력해주세요.';
+      return;
+    }
+
+    msg.style.color = 'green';
+    msg.textContent = `${email} 님, 구독해주셔서 감사합니다!`;
+    emailInput.value = '';
+  }
+</script>
+
+</body>
+</html>
